@@ -1,0 +1,72 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/build-timestamp: 2023-04-27 - 14:03:53 +0000
+    app.quarkus.io/commit-id: c3c52e29703db2d9b24808c3283e74e683e34106
+  labels:
+    app.kubernetes.io/name: demo-reactive-messaging
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.kubernetes.io/managed-by: quarkus
+  name: demo-reactive-messaging
+spec:
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: demo-reactive-messaging
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.quarkus.io/build-timestamp: 2023-04-27 - 14:03:53 +0000
+    app.quarkus.io/commit-id: c3c52e29703db2d9b24808c3283e74e683e34106
+  labels:
+    app.kubernetes.io/name: demo-reactive-messaging
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.kubernetes.io/managed-by: quarkus
+  name: demo-reactive-messaging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: demo-reactive-messaging
+      app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  template:
+    metadata:
+      annotations:
+        app.quarkus.io/build-timestamp: 2023-04-27 - 14:03:53 +0000
+        app.quarkus.io/commit-id: c3c52e29703db2d9b24808c3283e74e683e34106
+      labels:
+        app.kubernetes.io/name: demo-reactive-messaging
+        app.kubernetes.io/version: 1.0.0-SNAPSHOT
+        app.kubernetes.io/managed-by: quarkus
+    spec:
+      containers:
+        - env:
+            - name: QUARKUS_LAUNCH_DEVMODE
+              value: "true"
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          image: localhost:32000/bratuhia/demo-reactive-messaging:1.0.0-SNAPSHOT
+          imagePullPolicy: Always
+          name: demo-reactive-messaging
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            - containerPort: 8443
+              name: https
+              protocol: TCP
