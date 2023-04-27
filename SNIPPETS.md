@@ -24,6 +24,11 @@ quarkus create app org.abratuhi.quarkus:demo-reactive-messaging --extensions=qua
 cd demo-reactive-messaging
 ```
 
+Delete generated classes
+```
+find . -iname 'MyReactiveMessagingApplication*' -exec rm -fr {} \;
+```
+
 Create "transformer" which doubles the string
 
 ```
@@ -103,6 +108,8 @@ Comment-out/ remove
 
 #quarkus.devservices.enabled=false
 ```
+
+Add `System.out.println("Received" + str);` to processor/transformer class, since redpanda devservice does not seem to have `kafka-console-consumer`
 
 ## Testing <a id="testing"></a>
 Add required dependencies
@@ -192,6 +199,21 @@ Adjust `application.properties` allow remote dev
 quarkus.package.type=mutable-jar
 quarkus.live-reload.password=changeit
 quarkus.live-reload.url=http://localhost:9090
+```
+
+Adjust `application.properties` to use Kafka and Mosquitto from Kubernetes
+
+```
+mp.messaging.incoming.string-in.connector=smallrye-mqtt
+mp.messaging.incoming.string-in.topic=string-in
+mp.messaging.incoming.string-in.host=mosquitto
+mp.messaging.incoming.string-in.port=1883
+mp.messaging.incoming.string-in.auto-generated-client-id=true
+
+kafka.bootstrap.servers=my-cluster-kafka-bootstrap:9092
+
+mp.messaging.outgoing.string-out.connector=smallrye-kafka
+mp.messaging.outgoing.string-out.topic=string-out
 ```
 
 Build the image and generate kubernetes deployment descriptors:
